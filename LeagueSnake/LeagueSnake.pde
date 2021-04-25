@@ -49,7 +49,7 @@ void setup() {
 void dropFood() {
   //Set the food in a new random location
   foodX = ((int)random(50)*10);
-  foodX = ((int)random(50)*10);
+  foodY = ((int)random(50)*10);
 }
 
 
@@ -69,14 +69,16 @@ void draw() {
 
 void drawFood() {
   //Draw the food
-  rect(foodX, foodY, 10, 10);
   fill(225,0,0);
+  rect(foodX, foodY, 10, 10);
 }
 
 void drawSnake() {
   //Draw the head of the snake followed by its tail
-  rect(head.x, head.y, 10, 10);
   fill(0,0,225);
+  rect(head.x, head.y, 10, 10);
+  manageTail();
+  drawTail();
 }
 
 
@@ -98,11 +100,22 @@ void manageTail() {
   //This produces the illusion of the snake tail moving.
   checkTailCollision();
   drawTail();
+  Segment newseg = new Segment(head.x, head.y);
+  tailsegment.add(newseg);
+  tailsegment.remove(tailsegment.get(0));
+  //tailsegment.remove(0);
 }
 
 void checkTailCollision() {
   //If the snake crosses its own tail, shrink the tail back to one segment
-  
+  for(int i = 0; i < tailsegment.size(); i = i+1){
+    if(head.x == tailsegment.get(i).x && head.y == tailsegment.get(i).y){
+      foodeaten = 0;
+      tailsegment = new ArrayList<Segment>();
+      Segment newseg = new Segment(head.x, head.y);
+      tailsegment.add(newseg);
+    }
+  }
 }
 
 
@@ -172,9 +185,10 @@ void checkBoundaries() {
 void eat() {
   //When the snake eats the food, its tail should grow and more food appear
   if( head.x == foodX && head.y == foodY){
-    foodX = ((int)random(50)*10);
-    foodX = ((int)random(50)*10);
+    dropFood();
     newfoodeaten = foodeaten + 1;
     foodeaten = newfoodeaten;
+    Segment newseg = new Segment(head.x, head.y);
+    tailsegment.add(newseg);
   }
 }
